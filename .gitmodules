@@ -1,0 +1,3 @@
+[submodule "module2-agents"]
+	path = module2-agents
+	url = https://github.com/aymanapatel/sovereign-agent-lab-ayman.git
