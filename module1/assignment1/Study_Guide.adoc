@@ -1,0 +1,163 @@
+= Assignment 1: Study Guide
+:icons: font
+:toc: left
+:toclevels: 3
+:source-highlighter: rouge
+:stem: latexmath
+:sectnums:
+
+icon:info-circle[] *Notebook Reference:* `LLM_Architectures,_hometask_1.ipynb` +
+icon:book[] *Topic:* Gradient Descent, SGD, Numerical Stability, and L1 Regularization.
+
+== Overview & Learning Goals
+
+This module focuses on the fundamental components of training machine learning models (specifically Logistic Regression) using PyTorch from scratch. 
+
+.Key Objectives
+* icon:check[] Understand preprocessing design choices (text cleaning, fixed vocabulary, bag-of-words).
+* icon:check[] Implement Logistic Regression manually using PyTorch primitives.
+* icon:check[] Construct a full training loop with mini-batch Stochastic Gradient Descent (SGD).
+* icon:check[] Analyze the effects of Optimization hyperparameters (learning rate, batch size).
+* icon:check[] Understand L1 Regularization and how it encourages feature sparsity.
+* icon:check[] Explore advanced optimizers (Momentum, AdaGrad, Adam) on simple vs. complex loss landscapes.
+
+---
+
+== Data Preparation Pipeline
+
+The notebook uses the **SST-2 Dataset** (Stanford Sentiment Treebank) for binary sentiment classification (Positive vs. Negative).
+
+=== Text Cleaning & Tokenization
+Before passing text to a model, noise must be removed to represent similar pieces of text consistently. 
+
+[options="header", cols="1,2,2"]
+|===
+| Step | Action | Example
+| *Lowercasing* | Converts all text to lowercase | "Good Movie" -> "good movie"
+| *Punctuation* | Keeps only basic punctuation | "Wow!!!" -> "wow!!!"
+| *Hyphens* | Replaces hyphens with spaces | "well-written" -> "well written"
+| *Whitespace* | Collapses multiple spaces | `[space][space]word` -> ` word`
+|===
+
+=== Bag-of-Words (BoW) Representation
+Because linear models require fixed-length numerical feature vectors, text is converted using BoW:
+
+. *Vocabulary Building:* Extract the top `V=10,000` most frequent tokens from the training set.
+. *Vectorization:* Convert each sentence into a sparse vector of token frequencies.
+
+icon:warning[] *Note:* While effective for simple models, fixed-vocab BoW discards context and word order. Modern LLMs solve this with sub-word/byte-pair encodings.
+
+==== Section References
+[options="header", cols="1,4,4"]
+|===
+| Type | Title | Description
+| icon:book[] Book | https://web.stanford.edu/~jurafsky/slp3/[Speech and Language Processing (Jurafsky & Martin)] | Foundational reference for tokenization and classic feature methods.
+| icon:file-text[] Paper | https://arxiv.org/abs/1706.03762[Attention Is All You Need (2017)] | Why modern NLP moved beyond BoW to contextual sequence modeling.
+| icon:file-text[] Paper | https://arxiv.org/abs/1810.04805[BERT: Pre-training of Deep Bidirectional Transformers (2018)] | Real-world transition from sparse features to contextual embeddings.
+| icon:youtube[] Video | https://www.youtube.com/playlist?list=PLoROMvodv4rMiGQp3WXShtMGgzqpfVfbU[Stanford CS224N (Lecture: Word Vectors and Language Models)] | Strong conceptual bridge from BoW to modern embeddings.
+| icon:file-text[] Tutorial | https://huggingface.co/learn/nlp-course/chapter1/1[Hugging Face NLP Course] | Practical tokenization and preprocessing pipeline guidance.
+|===
+
+---
+
+== Logistic Regression & Training
+
+=== Model Architecture
+The logistic regression prediction function maps linear transformations through a Sigmoid activation:
+[stem]
+++++
+\hat{Y} = \frac{1}{1+exp^{-(wx +b)}}
+++++
+
+.PyTorch Implementation Requirements:
+* `w` (Weights) and `b` (Bias) wrapped as `nn.Parameter`.
+* Initialization strategies: Zeros vs. Small Random values.
+* Thresholding for binary predictions (Class 1 if stem:[p \ge 0.5]).
+
+=== Training Loop Configuration
+Training is orchestrated using *mini-batch Stochastic Gradient Descent (SGD)* with **Binary Cross-Entropy Loss (BCE)**.
+
+.Hyperparameter Trade-offs
+[options="header", cols="2,3,3"]
+|===
+| Hyperparameter | Low Value Effect | High Value Effect
+| *Learning Rate (LR)* | Slow convergence; might get stuck in local minima. | Unstable training; divergence; skipping over minima.
+| *Batch Size* | Noisier updates; slower hardware execution; acts as implicit regularization. | Smoother gradients; faster per-epoch timing; requires more memory.
+|===
+
+==== Section References
+[options="header", cols="1,4,4"]
+|===
+| Type | Title | Description
+| icon:file-text[] Paper | https://arxiv.org/abs/1409.1259[On the Properties of Neural Machine Translation: Encoder-Decoder Approaches (SGD behavior)] | Classic empirical view of optimization dynamics relevant to mini-batch training.
+| icon:file-text[] Paper | https://arxiv.org/abs/1711.05101[Decoupled Weight Decay Regularization (AdamW)] | Widely used training setup in modern transformer fine-tuning.
+| icon:file-text[] Paper | https://arxiv.org/abs/2001.08361[Scaling Laws for Neural Language Models] | Real-world LLM training behavior under compute/data/model scaling.
+| icon:youtube[] Video | https://www.youtube.com/playlist?list=PLAqhIrjkxbuWI23v9cThsA9GvCAUhRvKZ[Karpathy: Neural Networks Zero to Hero] | Clean implementation details for gradients and training loops.
+| icon:laptop[] Docs | https://pytorch.org/tutorials/beginner/introyt/autogradyt_tutorial.html[PyTorch Autograd Fundamentals] | Practical guide to gradient flow and parameter updates.
+|===
+
+---
+
+== L1 Regularization & Sparsity
+
+Regularization prevents overfitting by penalizing large weights.
+
+[options="header", cols="1,3,3"]
+|===
+| Regularization Type | Mathematical Penalty | Effect on Features
+| *L1 (Lasso)* | stem:[\lambda \sum \|w_i\|] | Implicit feature selection. Pushes non-important weights exactly toward zero (*Sparsity*).
+| *L2 (Ridge)* | stem:[\lambda \sum \|w_i\|^2] | Shrinks weights down but rarely zeroes them out. Smooth gradient scaling.
+|===
+
+icon:lightbulb[] *Proximal Descent vs. Vanilla SGD:*
+Because the L1 gradient (stem:[\lambda \cdot \mathrm{sign}(w)]) is constant regardless of the weight's magnitude, vanilla SGD leaps around zero noisily at the end of training. Proximal descent explicitly thresholds small weights to exactly `0`, yielding true sparsity.
+
+==== Section References
+[options="header", cols="1,4,4"]
+|===
+| Type | Title | Description
+| icon:file-text[] Paper | https://doi.org/10.1111/j.2517-6161.1996.tb02080.x[Regression Shrinkage and Selection via the Lasso (1996)] | Original L1 sparsity paper.
+| icon:file-text[] Paper | https://www.jstatsoft.org/article/view/v033i01[Regularization Paths for Generalized Linear Models via Coordinate Descent (glmnet)] | Practical sparse modeling methods used in large-scale systems.
+| icon:file-text[] Paper | https://arxiv.org/abs/2106.09685[LoRA: Low-Rank Adaptation of Large Language Models] | Real-world parameter-efficient LLM adaptation, often combined with regularization.
+| icon:file-text[] Paper | https://arxiv.org/abs/2305.14314[QLoRA: Efficient Finetuning of Quantized LLMs] | Current LLM finetuning practice where sparsity/efficiency trade-offs matter.
+| icon:youtube[] Video | https://www.youtube.com/watch?v=Q81RR3yKn30[StatQuest: L1 vs L2 Regularization] | Intuitive geometric explanation of sparsity effects.
+|===
+
+---
+
+== Optimization Algorithms
+
+Moving beyond vanilla SGD, the notebook tests optimizers on distinct loss topologies.
+
+=== Loss Functions Analyzed
+. **Convex Bowl:** stem:[f(x,y)= x^2 + 2y^2]. A simple, smooth convex environment with a single global minimum. Easy to optimize.
+. **Six-Hump Camel Function:** A difficult, non-convex landscape with narrow curved valleys and multiple local/global minima.
+
+=== Optimizer Comparison
+[options="header", cols="1,3,2"]
+|===
+| Optimizer | Mechanism | Best Use Case
+| *Gradient Descent (GD)* | Standard steepest descent using the full/batch gradient. | Simple convex problems or baseline testing. Very prone to oscillation in narrow valleys.
+| *Momentum* | Accumulates a moving average of past gradients (velocity) to dampen oscillations. | Navigating ravines or steep topological drops.
+| *AdaGrad* | Adapts learning rates per parameter based on historical squared gradients. | Sparse features (frequent features get lower LR, rare get higher). Con: LR vanishes over time.
+| *Adam* | Combines Momentum (1st moment) and RMSProp (2nd moment) with bias correction. | The default standard for deep learning and complex non-convex landscapes. Highly stable.
+|===
+
+==== Section References
+[options="header", cols="1,4,4"]
+|===
+| Type | Title | Description
+| icon:file-text[] Paper | https://arxiv.org/abs/1412.6980[Adam: A Method for Stochastic Optimization] | Core optimizer used in modern deep learning.
+| icon:file-text[] Paper | https://openreview.net/forum?id=ryQu7f-RZ[On the Convergence of Adam and Beyond (AMSGrad)] | Important caveats and fixes for adaptive optimizers.
+| icon:file-text[] Paper | https://arxiv.org/abs/2204.02311[PaLM: Scaling Language Modeling with Pathways] | Real-world large-scale LLM training with Adam-family optimizers.
+| icon:file-text[] Paper | https://arxiv.org/abs/2307.09288[Llama 2: Open Foundation and Fine-Tuned Chat Models] | Current production-style LLM training and optimization choices.
+| icon:youtube[] Video | https://www.youtube.com/watch?v=--Zg9z6sJ4I[Andrew Ng: Optimization Algorithms] | Practical intuition for Momentum, RMSProp, and Adam.
+|===
+
+---
+
+== Takeaways & Best Practices
+
+. *Numerical Stability is Critical:* When implementing `log-loss` or Logits, adding a tiny `epsilon` (e.g., `1e-15`) or clipping logits prevents calculations like `log(0)`, which yield NaNs.
+. *L1 for Interpretability:* If you have thousands of features (like BoW tokens) and need to know *which* words matter most, L1 regularization will trim the noise effectively.
+. *Adam for Complex Topologies:* As observed in the Six-Hump Camel function, standard GD can get easily trapped in local minima or bounce endlessly in ravines. Adam's moment-based tracking allows it to gracefully navigate difficult surfaces.
