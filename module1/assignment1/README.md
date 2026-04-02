@@ -38,6 +38,22 @@ To avoid JSON noise in `.ipynb` diffs, we use `nbdime`.
 
 ---
 
+## 📄 Converting to PDF
+
+If you need to submit or share your notebook as a PDF, use `nbconvert`.
+
+| Option | Command | Notes |
+| :--- | :--- | :--- |
+| **Standard PDF** | `uv run jupyter nbconvert --to pdf notebook.ipynb` | Requires a TeX distribution (like **MacTeX** or **MikTeX**). |
+| **Web PDF** | `uv run jupyter nbconvert --to webpdf notebook.ipynb` | Uses a headless browser; often easier if you don't have TeX. |
+
+**Note:** If `webpdf` fails, you may need to install Playwright browsers:
+```bash
+uv run playwright install chromium
+```
+
+---
+
 ## 💡 Troubleshooting
 If you encounter an `f-string: unmatched '['` SyntaxError, ensure your nested quotes aren't conflicting:
 - **❌ Incorrect:** `f'{data['key']}'`
