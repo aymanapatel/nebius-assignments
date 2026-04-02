@@ -3,7 +3,7 @@ Task 1 — Complete Solution
 ==========================
 
 Copy the relevant section into each notebook cell that has a TODO.
-All four sub-tasks (1.1, 1.2, 1.3, 1.4) are solved here.
+All four sub-tasks (1.1, 1.2, 1.3, 1.4) and Part 2 are solved here.
 """
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -296,6 +296,32 @@ def run_task_1_3():
         plt.tight_layout()
         plt.show()
 
+    # ── Loss Heatmaps ────────────────────────────────────────────────────────
+    for split in ['train', 'val']:
+        key    = f'{split}_loss'
+        matrix = np.array([
+            [results[(lr, bs)][key] for lr in learning_rates]
+            for bs in batch_sizes
+        ])
+
+        fig, ax = plt.subplots(figsize=(8, 3.5))
+        im = ax.imshow(matrix, cmap='magma_r', aspect='auto')
+        plt.colorbar(im, ax=ax, label='Log-Loss')
+        ax.set_xticks(range(len(learning_rates)))
+        ax.set_xticklabels([str(lr) for lr in learning_rates])
+        ax.set_yticks(range(len(batch_sizes)))
+        ax.set_yticklabels([str(bs) for bs in batch_sizes])
+        ax.set_xlabel('Learning Rate')
+        ax.set_ylabel('Batch Size')
+        ax.set_title(f'Logistic Regression — {split.capitalize()} Log-Loss Heatmap')
+        for i in range(len(batch_sizes)):
+            for j in range(len(learning_rates)):
+                ax.text(j, i, f"{matrix[i, j]:.3f}", ha='center', va='center',
+                        color='white' if matrix[i, j] > matrix.mean() else 'black',
+                        fontsize=8)
+        plt.tight_layout()
+        plt.show()
+
     # ── Written analysis ──────────────────────────────────────────────────────
     print("""
 Analysis:
@@ -446,16 +472,6 @@ Key observations:
 # ═══════════════════════════════════════════════════════════════════════════════
 # PART 2 — Comparing Optimization Algorithms (3 points)
 # ═══════════════════════════════════════════════════════════════════════════════
-#
-# Paste the two cells below into the notebook.
-#   Cell 1 → replace the cell that defines bowl / camel / plot_trajectories_camel_log
-#   Cell 2 → replace the cell that defines the four optimizers + runs experiments
-# ═══════════════════════════════════════════════════════════════════════════════
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Cell 1 — Objective functions + trajectory plotting helper
-# (keep exactly as the notebook defines them, or use these)
-# ─────────────────────────────────────────────────────────────────────────────
 
 import torch
 import numpy as np
@@ -464,13 +480,13 @@ import matplotlib.pyplot as plt
 
 # Function A — convex bowl
 def bowl(theta):
-    x, y = theta[0], theta[1]
-    return x**2 + 2*y**2          # note: notebook says x²+2y²
+    x, y = theta[..., 0], theta[..., 1]
+    return x**2 + 2*y**2
 
 
 # Function B — six-hump camel
 def camel(theta):
-    x, y = theta[0], theta[1]
+    x, y = theta[..., 0], theta[..., 1]
     return (4 - 2.1*x**2 + x**4/3)*x**2 + x*y + (-4 + 4*y**2)*y**2
 
 
@@ -478,7 +494,6 @@ def plot_trajectories(f, results, xlim=(-3, 3), ylim=(-2, 2),
                       title="Optimization Trajectories", use_log=False):
     """
     Contour plot of f with all optimizer trajectories overlaid.
-    Works for both bowl and camel.
     """
     xv = np.linspace(xlim[0], xlim[1], 400)
     yv = np.linspace(ylim[0], ylim[1], 400)
@@ -510,10 +525,6 @@ def plot_convergence(results, title="Function value vs iteration"):
     plt.title(title); plt.legend(); plt.grid(True)
     plt.tight_layout(); plt.show()
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Cell 2 — Optimizers (TODOs filled in) + experiments + plots + analysis
-# ─────────────────────────────────────────────────────────────────────────────
 
 # ── Gradient Descent ─────────────────────────────────────────────────────────
 
@@ -627,7 +638,7 @@ def adam(f, theta0, lr=0.01, beta1=0.9, beta2=0.999, eps=1e-8, n_steps=2000):
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Run experiments
+# Run Part 2 experiments
 # ──────────────────────────────────────────────────────────────────────────────
 
 def run_part_2():
