@@ -23,6 +23,9 @@ Focuses on building and orchestrating AI agents using various frameworks.
   - Dialog systems with Rasa.
   - MCP (Model Context Protocol) client implementations.
 
+### [Module 3: MLOps](module3-mlops/)
+
+
 ## Getting Started
 
 Each module/assignment folder contains its own specific instructions and environment setup. Generally:
@@ -35,6 +38,8 @@ Each module/assignment folder contains its own specific instructions and environ
 - Python 3.10+
 - PyTorch
 - (Optional) NVIDIA GPU for faster Transformer training in Module 1.
+
+
 
 ---
 *Created as part of the Nebius Academy AI Performance Engineering curriculum.*
