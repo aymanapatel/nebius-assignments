@@ -1,6 +1,3 @@
-[submodule "module3-mlops"]
-	path = module3-mlops
-	url = https://gitlab.com/jadnov/nebius-academy-ddp
 [submodule "module2-agents/assignment1-sovereignagent"]
 	path = module2-agents/assignment1-sovereignagent
 	url = https://github.com/aymanapatel/sovereign-agent-lab-ayman.git
