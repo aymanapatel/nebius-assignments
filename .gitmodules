@@ -4,3 +4,18 @@
 [submodule "module2-agents/assignment2-pub-booking"]
 	path = module2-agents/assignment2-pub-booking
 	url = https://github.com/aymanapatel/homework-pub-booking.git
+[submodule "module2-agents/agents-part2-misc/module-agents-part2"]
+	path = module2-agents/agents-part2-misc/module-agents-part2
+	url = https://github.com/aymanapatel/module-agents-part2.git
+[submodule "module3-mlops/assignment2"]
+	path = module3-mlops/assignment2
+	url = https://github.com/aymanapatel/mlops-hw-2.git
+[submodule "module3-mlops/assignment3"]
+	path = module3-mlops/assignment3
+	url = https://github.com/aymanapatel/mlops-assignment.git
+[submodule "module3-mlops/mlops-assignment"]
+	path = module3-mlops/mlops-assignment
+	url = https://github.com/aymanapatel/mlops-assignment.git
+[submodule "module4-perf-engineering/gpu_and_inference_hw"]
+	path = module4-perf-engineering/gpu_and_inference_hw
+	url = https://github.com/aymanapatel/gpu_and_inference_hw.git
